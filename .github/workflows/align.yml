@@ -1,16 +1,47 @@
-      - name: Run alignment script in Docker container
+name: Run Alignment Script
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  run-alignment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          load: true
+          tags: alignment-image:latest
+
+      - name: Create output directories
+        run: |
+          mkdir -p ${{ github.workspace }}/plots
+          mkdir -p ${{ github.workspace }}/results
+
+      - name: Run alignment.py in Docker
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
             -e PYTHONUNBUFFERED=1 \
-            decoder-image:latest \
-            bash -c "
-              set -e
-              echo 'Running alignment.py...'
-              python /app/subgraph_matching/alignment.py \
-                --query_path=/app/graphs/query.pkl \
-                --target_path=/app/graphs/target.pkl
-              echo 'Checking output directories...'
-              ls -la /app/results
-              ls -la /app/plots
-            "
+            alignment-image:latest \
+            bash -c "python /app/subgraph_matching/alignment.py"
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: alignment-results
+          path: |
+            results/
+            plots/
