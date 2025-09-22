@@ -1,0 +1,16 @@
+      - name: Run alignment script in Docker container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -e PYTHONUNBUFFERED=1 \
+            decoder-image:latest \
+            bash -c "
+              set -e
+              echo 'Running alignment.py...'
+              python /app/subgraph_matching/alignment.py \
+                --query_path=/app/graphs/query.pkl \
+                --target_path=/app/graphs/target.pkl
+              echo 'Checking output directories...'
+              ls -la /app/results
+              ls -la /app/plots
+            "
