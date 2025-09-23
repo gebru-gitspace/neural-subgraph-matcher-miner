@@ -98,6 +98,11 @@ def main():
     plt.savefig("plots/alignment.png")
     print("Saved alignment matrix plot in plots/alignment.png")
 
+    ## Simple existence test, whether each query node has a matching target node
+    exists = all(mat[i].max() > 0.5 for i in range(mat.shape[0]))
+    print("Query exists in target?", exists)
+
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     main()
