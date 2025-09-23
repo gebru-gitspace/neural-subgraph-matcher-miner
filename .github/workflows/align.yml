@@ -1,4 +1,4 @@
-name: Run Alignment Script
+# name: Run Alignment Script
 
 # on:
 #   push:
@@ -7,41 +7,41 @@ name: Run Alignment Script
 #     branches: [main]
 #   workflow_dispatch:
 
-jobs:
-  run-alignment:
-    runs-on: ubuntu-latest
+# jobs:
+#   run-alignment:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          load: true
-          tags: alignment-image:latest
+#       - name: Build Docker image
+#         uses: docker/build-push-action@v4
+#         with:
+#           context: .
+#           load: true
+#           tags: alignment-image:latest
 
-      - name: Create output directories
-        run: |
-          mkdir -p ${{ github.workspace }}/plots
-          mkdir -p ${{ github.workspace }}/results
+#       - name: Create output directories
+#         run: |
+#           mkdir -p ${{ github.workspace }}/plots
+#           mkdir -p ${{ github.workspace }}/results
 
-      - name: Run alignment.py in Docker
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -e PYTHONUNBUFFERED=1 \
-            alignment-image:latest \
-            bash -c "python /app/subgraph_matching/alignment.py"
+#       - name: Run alignment.py in Docker
+#         run: |
+#           docker run --rm \
+#             -v ${{ github.workspace }}:/app \
+#             -e PYTHONUNBUFFERED=1 \
+#             alignment-image:latest \
+#             bash -c "python /app/subgraph_matching/alignment.py"
 
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: alignment-results
-          path: |
-            results/
-            plots/
+#       - name: Upload results
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: alignment-results
+#           path: |
+#             results/
+#             plots/
