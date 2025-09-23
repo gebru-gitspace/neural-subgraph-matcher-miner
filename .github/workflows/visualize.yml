@@ -1,0 +1,31 @@
+name: Run Visualizer
+
+on:
+  push:
+    paths:
+      - 'visualizer/**'
+  workflow_dispatch:
+
+jobs:
+  run-visualizer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download matcher results
+        uses: actions/download-artifact@v4
+        with:
+          name: matcher-results
+          path: plots/
+
+      - name: Run visualizer
+        run: |
+          echo "Generating visualizations..."
+          python -m visualizer.main --input=plots/ --output=plots/final/
+
+      - name: Upload visualizations
+        uses: actions/upload-artifact@v4
+        with:
+          name: visualizer-output
+          path: plots/final/
