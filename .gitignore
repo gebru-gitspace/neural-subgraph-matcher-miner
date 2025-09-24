@@ -12,4 +12,7 @@ results/
 orca/
 core
 deepsnap-experimental/
+
+
 graphs/
+.env
