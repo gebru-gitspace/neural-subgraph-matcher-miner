@@ -31,6 +31,7 @@ from common import utils
 from subgraph_matching.config import parse_encoder
 from subgraph_matching.test import validation
 from subgraph_matching.train import build_model
+from pkl_visualizer import *
 
 def gen_alignment_matrix(model, query, target, method_type="order"):
     """Generate subgraph matching alignment matrix for a given query and
@@ -94,7 +95,7 @@ def main():
         target = nx.gnp_random_graph(16, 0.25)
 
     model = build_model(args)
-    mat = gen_alignment_matrix(model, query, target,
+    mat = gen_alignment_matrix(model, target, target,
         method_type=args.method_type)
 
     np.save("results/alignmentq.npy", mat)
@@ -104,9 +105,45 @@ def main():
     plt.savefig("plots/alignmentq.png")
     print("Saved alignment matrix plot in plots/alignmenqt.png")
 
-    ## Simple existence test, whether each query node has a matching target node
-    exists = all(mat[i].max() > 0.5 for i in range(mat.shape[0]))
-    print("Query exists in target?", exists)
+    ## Simple existence test, whether each query is subgraph of target
+    threshold = 0.5
+    score_avg = mat.max(axis=1).mean()
+    exists_avg = score_avg > threshold
+    print(f"[Option B] Average-max score: {score_avg:.3f}, Query exists in target? {exists_avg}")
+
+    # ------------------------
+    # OPTION A: Max matching (one-to-one mapping)
+
+    binary_mat = (mat > threshold).astype(int)
+    B = nx.Graph()
+    for i in range(binary_mat.shape[0]):
+        for j in range(binary_mat.shape[1]):
+            if binary_mat[i, j]:
+                B.add_edge(f"q{i}", f"t{j}")
+
+    # Only query nodes that actually exist in B
+    top_nodes = {n for n in B.nodes if n.startswith("q")}
+
+    matching = nx.algorithms.bipartite.maximum_matching(B, top_nodes=top_nodes)
+
+    # Boolean result
+    exists_matching = all(f"q{i}" in matching for i in range(mat.shape[0]))
+    print(f"[Option A] One-to-one matching exists? {exists_matching}")
+
+    # Print mapping
+    print("Query node → Target node mapping:")
+    for q in range(mat.shape[0]):
+        tgt = matching.get(f"q{q}")
+        if tgt:
+            print(f"  q{q} → {tgt}")
+        else:
+            print(f"  q{q} → None")
+
+    
+    # Visualize query and target graphs
+    visualize_graphs_auto_labels(target)
+    visualize_graphs_auto_labels(target)
+
 
 
 if __name__ == '__main__':
