@@ -1,4 +1,4 @@
-# visualizer_show_all_detailed.py
+# visualizer_show_all_auto_labels.py
 import pickle
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -6,19 +6,26 @@ from pathlib import Path
 
 
 def load_pkl(path: str):
+    """Load a pickle file containing a NetworkX graph or a list of graphs."""
     with open(path, "rb") as f:
         obj = pickle.load(f)
     print(f"✅ Loaded {path}, type: {type(obj)}")
     return obj
 
 
-def visualize_graphs_detailed(graphs, node_label_fields=None, edge_label_field="name"):
-    """
-    Visualize a list of NetworkX graphs with detailed labels.
-    - node_label_fields: list of node attributes to show (in order)
-    - edge_label_field: edge attribute to display as label
-    """
-    node_label_fields = node_label_fields or ["id", "label"]
+def format_attributes(attrs: dict):
+    """Format node or edge attributes as multi-line string for labels."""
+    if not attrs:
+        return ""
+    return "\n".join(f"{k}: {v}" for k, v in attrs.items())
+
+
+def visualize_graphs_auto_labels(graphs):
+    """Visualize single or list of NetworkX graphs with all attributes as labels."""
+    
+    # Ensure graphs is a list
+    if isinstance(graphs, (nx.Graph, nx.DiGraph)):
+        graphs = [graphs]
 
     for i, g in enumerate(graphs):
         if not isinstance(g, (nx.Graph, nx.DiGraph)):
@@ -29,19 +36,13 @@ def visualize_graphs_detailed(graphs, node_label_fields=None, edge_label_field="
 
         pos = nx.spring_layout(g, seed=42)
 
-        # Build node labels
-        node_labels = {}
-        for n, data in g.nodes(data=True):
-            parts = [str(data.get(f, "")) for f in node_label_fields if f in data]
-            node_labels[n] = "\n".join(parts) if parts else str(n)
+        # Node labels
+        node_labels = {n: format_attributes(data) for n, data in g.nodes(data=True)}
 
-        # Build edge labels
-        edge_labels = {}
-        for u, v, data in g.edges(data=True):
-            label = data.get(edge_label_field, "")
-            edge_labels[(u, v)] = label
+        # Edge labels
+        edge_labels = {(u, v): format_attributes(data) for u, v, data in g.edges(data=True)}
 
-        plt.figure(figsize=(6, 6))
+        plt.figure(figsize=(7, 7))
         nx.draw(
             g,
             pos,
@@ -51,24 +52,20 @@ def visualize_graphs_detailed(graphs, node_label_fields=None, edge_label_field="
             edge_color="gray",
             arrows=isinstance(g, nx.DiGraph),
         )
-        nx.draw_networkx_labels(g, pos, labels=node_labels, font_size=8)
+        nx.draw_networkx_labels(g, pos, labels=node_labels, font_size=7)
         if edge_labels:
             nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=6)
 
-        plt.title(f"Graph {i}: {g.number_of_nodes()}n-{g.number_of_edges()}e")
+        plt.title(f"Graph {i}: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
         plt.show()
 
 
 if __name__ == "__main__":
-    path = "graphs/queries/patterns.pkl"
-    path = Path(path)
+    # Path to your pkl file
+    path = Path("graphs/queries/patterns.pkl")
 
     if not path.exists():
         print(f"❌ File not found: {path}")
     else:
         obj = load_pkl(path)
-        if isinstance(obj, list) and all(isinstance(x, (nx.Graph, nx.DiGraph)) for x in obj):
-            # Adjust node fields based on your YAML schema
-            visualize_graphs_detailed(obj, node_label_fields=["id", "label", "gene_name", "transcript_name"])
-        else:
-            print("⚠️ Pickle is not a list of NetworkX graphs.")
+        visualize_graphs_auto_labels(obj)
