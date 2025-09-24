@@ -78,12 +78,18 @@ def main():
     args.test = True
     if args.query_path:
         with open(args.query_path, "rb") as f:
-            query = pickle.load(f)
+            query = pickle.load(f)[0]
     else:
         query = nx.gnp_random_graph(8, 0.25)
     if args.target_path:
         with open(args.target_path, "rb") as f:
             target = pickle.load(f)
+
+
+            # If your target is a dict of edges or adjacency:
+            if isinstance(target, dict):
+                target = nx.from_dict_of_dicts(target)  # or from_dict_of_lists depending on structure
+
     else:
         target = nx.gnp_random_graph(16, 0.25)
 
