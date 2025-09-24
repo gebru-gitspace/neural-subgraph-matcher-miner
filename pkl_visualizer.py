@@ -40,7 +40,10 @@ def visualize_graphs_auto_labels(graphs):
         node_labels = {n: format_attributes(data) for n, data in g.nodes(data=True)}
 
         # Edge labels
-        edge_labels = {(u, v): format_attributes(data) for u, v, data in g.edges(data=True)}
+        # edge_labels = {(u, v): format_attributes(data) for u, v, data in g.edges(data=True)}
+        # Edge labels (show only "type")
+        edge_labels = {(u, v): data.get("type", "") for u, v, data in g.edges(data=True)}
+
 
         plt.figure(figsize=(7, 7))
         nx.draw(
