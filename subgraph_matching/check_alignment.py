@@ -11,6 +11,8 @@ import networkx as nx
 import torch
 import matplotlib.pyplot as plt
 
+from pkl_visualizer import *
+
 from common import utils
 from subgraph_matching.config import parse_encoder
 from subgraph_matching.train import build_model
@@ -205,6 +207,11 @@ def main():
     # Simple existence test
     exists = all(mat[i].max() > 0.5 for i in range(mat.shape[0]))
     print(f"[RESULT] Query 0 exists in target? {exists}")
+
+    # Visualize query and target graphs
+    visualize_graphs_auto_labels(query)
+    visualize_graphs_auto_labels(target)
+
 
 
 
