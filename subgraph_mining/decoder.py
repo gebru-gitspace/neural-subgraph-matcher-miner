@@ -1,3 +1,19 @@
+"""
+This script performs graph pattern mining (motif discovery).
+
+1. Loads graphs from `.pkl` files or standard datasets.
+2. Handles **large graphs** via chunking or neighborhood sampling.
+3. Mines **graph motifs/patterns** using various search strategies:
+   - MCTS, Memory-Efficient MCTS, Greedy, Beam Search.
+4. Embeds graphs using models (End2EndOrder, MLP, OrderEmbedder).
+5. Visualizes graphs and mined motifs with detailed node and edge labels:
+   - Node attributes like id, label, gene_name, transcript_name.
+   - Edge attributes like type and direction.
+   - Anchor nodes highlighted.
+
+Sep 2025
+"""
+
 import argparse
 import csv
 from itertools import combinations
