@@ -1,7 +1,6 @@
 """
 Subgraph alignment: robust handling for multiple graph formats
-- Queries: list of nx.Graph
-- Target: list of tuples (node_id, node_data_dict)
+
 """
 
 import argparse
@@ -156,7 +155,7 @@ def main():
         help="Path to query graph(s) pickle"
     )
     parser.add_argument(
-        "--target_path", type=str, default="graphs/targets/graph.pkl",
+        "--target_path", type=str, default="graphs/targets/directed.pkl",
         help="Path to target graph pickle"
     )
 
@@ -173,7 +172,7 @@ def main():
 
 
     # Build model
-    # target = queries[-1]
+    target = queries[-1]
     model = build_model(args)
     print("[INFO] Model built:")
 
@@ -207,22 +206,6 @@ def main():
     exists = all(mat[i].max() > 0.5 for i in range(mat.shape[0]))
     print(f"[RESULT] Query 0 exists in target? {exists}")
 
-
-    # # Run alignment for each query
-    # for idx, query in enumerate(queries):
-    #     mat = gen_alignment_matrix(model, query, target)
-    #     np.save(f"results/alignment_{idx}.npy", mat)
-    #     print(f"[INFO] Saved alignment matrix to results/alignment_{idx}.npy")
-
-    #     plt.imshow(mat, interpolation="nearest", cmap="viridis")
-    #     plt.colorbar()
-    #     plt.title(f"Alignment Matrix (Query {idx})")
-    #     plt.savefig(f"plots/alignment_{idx}.png")
-    #     plt.close()
-    #     print(f"[INFO] Saved alignment matrix plot to plots/alignment_{idx}.png")
-
-    #     exists = all(mat[i].max() > 0.5 for i in range(mat.shape[0]))
-    #     print(f"[RESULT] Query {idx} exists in target? {exists}")
 
 
 if __name__ == "__main__":

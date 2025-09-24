@@ -97,12 +97,12 @@ def main():
     mat = gen_alignment_matrix(model, query, target,
         method_type=args.method_type)
 
-    np.save("results/alignment.npy", mat)
-    print("Saved alignment matrix in results/alignment.npy")
+    np.save("results/alignmentq.npy", mat)
+    print("Saved alignment matrix in results/alignmentq.npy")
 
     plt.imshow(mat, interpolation="nearest")
-    plt.savefig("plots/alignment.png")
-    print("Saved alignment matrix plot in plots/alignment.png")
+    plt.savefig("plots/alignmentq.png")
+    print("Saved alignment matrix plot in plots/alignmenqt.png")
 
     ## Simple existence test, whether each query node has a matching target node
     exists = all(mat[i].max() > 0.5 for i in range(mat.shape[0]))
