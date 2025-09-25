@@ -174,7 +174,7 @@ def main():
 
 
     # Build model
-    target = queries[5]
+    target = queries[11]
     model = build_model(args)
     print("[INFO] Model built:")
 
@@ -184,7 +184,7 @@ def main():
 
     # Take only the first query safely
     if isinstance(queries, list):
-        query = queries[10]
+        query = queries[3]
     else:
         query = queries  # single nx.Graph
 
@@ -204,7 +204,7 @@ def main():
     plt.close()
     print("[INFO] Saved alignment matrix plot to plots/alignment_0.png")
 
-    ## Simple existence test, whether each query is subgraph of target
+    ## isomorphism test, whether each query is subgraph of target
     threshold = 0.5
     score_avg = mat.max(axis=1).mean()
     exists_avg = score_avg > threshold
@@ -242,8 +242,8 @@ def main():
 
 
     # Visualize query and target graphs
-    visualize_graphs_auto_labels(query)
-    visualize_graphs_auto_labels(target)
+    visualize_graphs_auto_labels([query, target])
+    # visualize_graphs_auto_labels(target)
 
 
 

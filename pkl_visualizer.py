@@ -87,4 +87,5 @@ if __name__ == "__main__":
         print(f"❌ File not found: {path}")
     else:
         obj = load_pkl(path)
-        visualize_graphs_auto_labels(obj)
+        for i in range(len(obj)):
+            visualize_graphs_auto_labels(obj[i])
