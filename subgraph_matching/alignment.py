@@ -81,7 +81,7 @@ def main():
         with open(args.query_path, "rb") as f:
             query = pickle.load(f)[0]
     else:
-        query = nx.gnp_random_graph(8, 0.25)
+        query = nx.gnp_random_graph(5, 0.5)
     if args.target_path:
         with open(args.target_path, "rb") as f:
             target = pickle.load(f)
@@ -92,10 +92,10 @@ def main():
                 target = nx.from_dict_of_dicts(target)  # or from_dict_of_lists depending on structure
 
     else:
-        target = nx.gnp_random_graph(16, 0.25)
+        target = nx.gnp_random_graph(10, 0.5)
 
     model = build_model(args)
-    mat = gen_alignment_matrix(model, target, target,
+    mat = gen_alignment_matrix(model, query, target,
         method_type=args.method_type)
 
     np.save("results/alignmentq.npy", mat)
@@ -141,7 +141,7 @@ def main():
 
     
     # Visualize query and target graphs
-    visualize_graphs_auto_labels(target)
+    visualize_graphs_auto_labels(query)
     visualize_graphs_auto_labels(target)
 
 
