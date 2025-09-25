@@ -67,6 +67,13 @@ def visualize_graphs_auto_labels(graphs):
             nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=6, ax=ax)
 
         ax.set_title(f"Graph {i}: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
+    # 🔹 Add a vertical divider between subplots (in figure coordinates)
+    for i in range(1, num_graphs):
+        fig.add_artist(plt.Line2D(
+            [i / num_graphs, i / num_graphs], [0, 1],  # normalized coords
+            color="black", linestyle="--", transform=fig.transFigure
+        ))
+
 
     plt.tight_layout()
     plt.show()
