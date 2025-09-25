@@ -141,8 +141,8 @@ def main():
 
     
     # Visualize query and target graphs
-    visualize_graphs_auto_labels(query)
-    visualize_graphs_auto_labels(target)
+    visualize_graphs_auto_labels([query, target])
+    # visualize_graphs_auto_labels(target)
 
 
 

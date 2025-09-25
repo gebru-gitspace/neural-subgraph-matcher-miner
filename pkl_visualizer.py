@@ -22,12 +22,21 @@ def format_attributes(attrs: dict):
 
 def visualize_graphs_auto_labels(graphs):
     """Visualize single or list of NetworkX graphs with all attributes as labels."""
-    
+
     # Ensure graphs is a list
     if isinstance(graphs, (nx.Graph, nx.DiGraph)):
         graphs = [graphs]
 
-    for i, g in enumerate(graphs):
+    num_graphs = len(graphs)
+
+    # --- ✅ Create subplots (1 row, N columns) ---
+    fig, axes = plt.subplots(1, num_graphs, figsize=(7 * num_graphs, 7))
+
+    # If only 1 graph, axes is not a list
+    if num_graphs == 1:
+        axes = [axes]
+
+    for i, (g, ax) in enumerate(zip(graphs, axes)):
         if not isinstance(g, (nx.Graph, nx.DiGraph)):
             print(f"⚠️ Skipping item {i}, not a graph: {type(g)}")
             continue
@@ -39,13 +48,10 @@ def visualize_graphs_auto_labels(graphs):
         # Node labels
         node_labels = {n: format_attributes(data) for n, data in g.nodes(data=True)}
 
-        # Edge labels
-        # edge_labels = {(u, v): format_attributes(data) for u, v, data in g.edges(data=True)}
         # Edge labels (show only "type")
         edge_labels = {(u, v): data.get("type", "") for u, v, data in g.edges(data=True)}
 
-
-        plt.figure(figsize=(7, 7))
+        # --- Draw graph in subplot ---
         nx.draw(
             g,
             pos,
@@ -54,13 +60,16 @@ def visualize_graphs_auto_labels(graphs):
             node_size=600,
             edge_color="gray",
             arrows=isinstance(g, nx.DiGraph),
+            ax=ax,   # ✅ draw in specific subplot
         )
-        nx.draw_networkx_labels(g, pos, labels=node_labels, font_size=7)
+        nx.draw_networkx_labels(g, pos, labels=node_labels, font_size=7, ax=ax)
         if edge_labels:
-            nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=6)
+            nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=6, ax=ax)
 
-        plt.title(f"Graph {i}: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
-        plt.show()
+        ax.set_title(f"Graph {i}: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
+
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == "__main__":
